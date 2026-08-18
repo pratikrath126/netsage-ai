@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Human Review</h1>
+    <p class="text-muted">{{ total_reviewed }} reviewed out of {{ total_ai }} total AI diagnoses.</p>
+</div>
+
+<div class="review-list">
+    {% for case in cases %}
+    <div class="card review-card" id="review-card-{{ case.case_id }}">
+        <div class="review-header">
+            <h3>{{ case.case_id }} <span class="badge badge-concept">{{ case.concept_tag }}</span>
+                <span class="badge badge-{{ case.severity|lower }}">{{ case.severity }}</span>
+            </h3>
+            {% if case.review %}
+                <span class="badge badge-status badge-{{ case.review.status }}">{{ case.review.status|title }}</span>
+            {% else %}
+                <span class="badge badge-status badge-pending">Pending Review</span>
+            {% endif %}
+        </div>
+        
+        <p class="mt-10"><strong>Symptom:</strong> {{ case.symptom }}</p>
+        
+        <div class="ai-summary mt-10">
+            <h4>AI Diagnosis:</h4>
+            <div class="ai-summary-grid">
+                <div class="ai-field">
+                    <strong>Root Cause:</strong>
+                    <p>{{ case.ai_response.root_cause }}</p>
+                </div>
+                <div class="ai-field-row mt-10">
+                    <div>
+                        <strong>Confidence:</strong>
+                        <span class="badge {% if case.ai_response.confidence == 'high' %}badge-low{% elif case.ai_response.confidence == 'medium' %}badge-medium{% else %}badge-high{% endif %}">
+                            {{ case.ai_response.confidence | title }}
+                        </span>
+                    </div>
+                    <div>
+                        <strong>OSI Layer:</strong>
+                        <span class="badge badge-concept">{{ case.ai_response.osi_layer }}</span>
+                    </div>
+                </div>
+                {% if case.ai_response.evidence %}
+                <div class="ai-field mt-10">
+                    <strong>Evidence:</strong>
+                    <p class="evidence-text">{{ case.ai_response.evidence }}</p>
+                </div>
+                {% endif %}
+                {% if case.ai_response.fix_steps %}
+                <div class="ai-field mt-10">
+                    <strong>Fix Steps:</strong>
+                    <ol class="fix-steps-list">
+                        {% for step in case.ai_response.fix_steps %}
+                        <li><code>{{ step }}</code></li>
+                        {% endfor %}
+                    </ol>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="expected-fault mt-10">
+            <strong>Expected Fault:</strong> {{ case.expected_fault }}
+            <span class="text-muted">({{ case.expected_osi_layer }})</span>
+        </div>
+
+        <div class="review-actions mt-20">
+            <button class="btn btn-accept" onclick="submitReview('{{ case.case_id }}', 'accepted')">✅ Accept</button>
+            <button class="btn btn-edit" onclick="toggleEdit('{{ case.case_id }}')">✏️ Edit</button>
+            <button class="btn btn-reject" onclick="submitReview('{{ case.case_id }}', 'rejected')">❌ Reject</button>
+        </div>
+
+        <div id="edit-form-{{ case.case_id }}" class="edit-form mt-20" style="display: none;">
+            <label>Corrected Diagnosis:</label>
+            <input type="text" id="corrected-{{ case.case_id }}" class="form-control mb-10" 
+                   placeholder="Enter the correct root cause..."
+                   value="{{ case.review.corrected_diagnosis if case.review else '' }}">
+            
+            <label>Reviewer Notes:</label>
+            <textarea id="notes-{{ case.case_id }}" class="form-control mb-10" rows="3" 
+                      placeholder="Explain why the AI diagnosis was incorrect...">{{ case.review.reviewer_notes if case.review else '' }}</textarea>
+            
+            <button class="btn btn-primary" onclick="submitReview('{{ case.case_id }}', 'edited')">💾 Save Edits</button>
+        </div>
+    </div>
+    {% else %}
+    <div class="card">
+        <p>No AI diagnoses available to review yet. Run diagnoses first from the <a href="/diagnose">Diagnose</a> page.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

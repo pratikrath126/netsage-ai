@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Diagnose Case</h1>
+</div>
+
+<div class="card mb-20">
+    <label for="caseSelect">Select a Case:</label>
+    <select id="caseSelect" class="form-control">
+        <option value="">-- Choose a case --</option>
+        {% for c in cases %}
+        <option value="{{ c.case_id }}" {% if selected_case and selected_case.case_id == c.case_id %}selected{% endif %}>
+            {{ c.case_id }} - {{ c.symptom }}
+        </option>
+        {% endfor %}
+    </select>
+</div>
+
+{% if selected_case %}
+<div class="grid-2-col">
+    <div class="col">
+        <div class="card">
+            <h3>Case Details</h3>
+            <p><strong>Case ID:</strong> {{ selected_case.case_id }}</p>
+            <p><strong>Symptom:</strong> {{ selected_case.symptom }}</p>
+            <p><strong>Topology:</strong> {{ selected_case.topology_note }}</p>
+            <p><strong>Concept:</strong> <span class="badge badge-concept">{{ selected_case.concept_tag }}</span></p>
+            <p><strong>Severity:</strong> <span class="badge badge-{{ selected_case.severity|lower }}">{{ selected_case.severity }}</span></p>
+            <h4 class="mt-10">Device Outputs:</h4>
+            <pre class="small-code"><code>{{ selected_case.show_outputs }}</code></pre>
+        </div>
+
+        <div class="card mt-20">
+            <h3>Rule Checker Results</h3>
+            {% if rule_results %}
+            <ul class="rule-list">
+                {% for r in rule_results %}
+                <li>
+                    <span class="badge badge-{{ r.severity|lower }}">{{ r.severity }}</span>
+                    <strong>{{ r.check }}:</strong> {{ r.finding }}
+                </li>
+                {% endfor %}
+            </ul>
+            {% else %}
+            <p class="text-muted">No issues found by deterministic rule checks.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="card" id="aiDiagnosisCard">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <h3>AI Diagnosis</h3>
+                <span id="liveBadge" class="live-badge" style="display: none;">✨ Updated Just Now</span>
+            </div>
+            
+            <div id="aiResponseContainer">
+                {% if ai_response %}
+                <div class="ai-result" id="aiResultContent">
+                    <div class="ai-field">
+                        <h4>🔍 Root Cause</h4>
+                        <p id="dispRootCause">{{ ai_response.root_cause }}</p>
+                    </div>
+
+                    <div class="ai-field-row mt-10">
+                        <div class="ai-field-small">
+                            <h4>Confidence</h4>
+                            <span id="dispConfidence" class="badge {% if ai_response.confidence == 'high' %}badge-low{% elif ai_response.confidence == 'medium' %}badge-medium{% else %}badge-high{% endif %}">
+                                {{ ai_response.confidence | title }}
+                            </span>
+                        </div>
+                        <div class="ai-field-small">
+                            <h4>OSI Layer</h4>
+                            <span id="dispOsiLayer" class="badge badge-concept">{{ ai_response.osi_layer }}</span>
+                        </div>
+                    </div>
+
+                    <div class="ai-field mt-10">
+                        <h4>📋 Evidence</h4>
+                        <p id="dispEvidence" class="evidence-text">{{ ai_response.evidence }}</p>
+                    </div>
+
+                    <div class="ai-field mt-10">
+                        <h4>▶ Next Command to Run</h4>
+                        <div id="dispNextCommand">
+                            {% if ai_response.next_command %}
+                            <code class="command-inline">{{ ai_response.next_command }}</code>
+                            {% else %}
+                            <p class="text-muted">No additional commands needed.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="ai-field mt-10">
+                        <h4>🔧 Fix Steps</h4>
+                        <div id="dispFixSteps">
+                            {% if ai_response.fix_steps %}
+                            <ol class="fix-steps-list">
+                                {% for step in ai_response.fix_steps %}
+                                <li><code>{{ step }}</code></li>
+                                {% endfor %}
+                            </ol>
+                            {% else %}
+                            <p class="text-muted">No fix steps provided.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <div id="aiEmptyState">
+                    <p class="text-muted">No AI diagnosis available yet. Click the button below to run one.</p>
+                </div>
+                {% endif %}
+            </div>
+
+            <div id="aiLoadingBox" class="loading-box mt-10" style="display: none;">
+                <div class="loading-spinner-ring"></div>
+                <h4 style="color: var(--primary);">Analyzing with DeepSeek V4 Flash...</h4>
+                <p class="text-muted" style="font-size: 0.85rem; margin-top: 4px;">Evaluating topology notes, symptom, and show command outputs.</p>
+            </div>
+
+            <button id="btnRunDiagnosis" class="btn btn-primary mt-20" data-case="{{ selected_case.case_id }}">
+                <span class="btn-text">⚡ Run AI Diagnosis</span>
+            </button>
+        </div>
+
+        <div class="card mt-20">
+            <h3>Comparison</h3>
+            <div class="comparison-grid">
+                <div>
+                    <h4>✅ Expected Fault</h4>
+                    <p>{{ selected_case.expected_fault }}</p>
+                    <p class="text-muted">{{ selected_case.expected_osi_layer }}</p>
+                </div>
+                <div>
+                    <h4>🤖 AI Diagnosis</h4>
+                    <p id="aiRootCause">{{ ai_response.root_cause if ai_response else 'Pending...' }}</p>
+                    <p id="aiOsiLayer" class="text-muted">{{ ai_response.osi_layer if ai_response else 'Pending...' }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

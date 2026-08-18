@@ -1,0 +1,58 @@
+[
+    {
+        "case_id": "CASE-003",
+        "ai_said": "VLAN not created on switch",
+        "correct_answer": "VLAN not allowed on trunk link",
+        "why_ai_was_wrong": "AI saw the VLAN was missing in 'show vlan' output but failed to check 'show interfaces trunk' where it was explicitly denied.",
+        "lesson_learned": "Always check trunking configurations when dealing with cross-switch VLAN propagation issues."
+    },
+    {
+        "case_id": "CASE-010",
+        "ai_said": "DHCP pool exhaustion",
+        "correct_answer": "DHCP pool network statement mismatch",
+        "why_ai_was_wrong": "AI noticed clients weren't getting IPs and guessed exhaustion without checking the 'show ip dhcp pool' network mask against the interface.",
+        "lesson_learned": "Verify DHCP pool network declarations strictly match the serving interface subnet."
+    },
+    {
+        "case_id": "CASE-014",
+        "ai_said": "DNS server unreachable",
+        "correct_answer": "DNS service not enabled on router (no ip domain-lookup)",
+        "why_ai_was_wrong": "AI assumed network reachability was the issue because pings failed by hostname, but 'no ip domain-lookup' was active in the config.",
+        "lesson_learned": "Check local resolver status on the device before assuming external DNS failure."
+    },
+    {
+        "case_id": "CASE-018",
+        "ai_said": "ACL blocking all traffic",
+        "correct_answer": "ACL applied inbound instead of outbound",
+        "why_ai_was_wrong": "AI identified the correct ACL lines but failed to verify the direction of application on the interface.",
+        "lesson_learned": "The direction (in/out) of an ACL application is as critical as the ACL rules themselves."
+    },
+    {
+        "case_id": "CASE-022",
+        "ai_said": "NAT pool address exhaustion",
+        "correct_answer": "NAT inside/outside not configured on interfaces",
+        "why_ai_was_wrong": "AI analyzed the NAT translations and found none, assuming pool issues without verifying interface assignments.",
+        "lesson_learned": "Always verify 'ip nat inside' and 'ip nat outside' are applied to the correct interfaces."
+    },
+    {
+        "case_id": "CASE-028",
+        "ai_said": "Open authentication mismatch with WPA2",
+        "correct_answer": "WPA2-PSK passphrase mismatch between client and wireless access point",
+        "why_ai_was_wrong": "AI flagged authentication method mismatch instead of checking the specific pre-shared key config on client profiles.",
+        "lesson_learned": "Wireless security issues often stem from mismatched PSK passphrases even when SSID broadcast is working."
+    },
+    {
+        "case_id": "CASE-030",
+        "ai_said": "Cable disconnected",
+        "correct_answer": "Speed/duplex mismatch causing CRC errors",
+        "why_ai_was_wrong": "AI noticed interface flapping and assumed physical disconnection, missing the high CRC error count in 'show interfaces'.",
+        "lesson_learned": "Interface errors (CRC, giants, runts) are strong indicators of duplex/speed mismatches, not just cable disconnects."
+    },
+    {
+        "case_id": "CASE-032",
+        "ai_said": "General Layer 1/2 connectivity failure",
+        "correct_answer": "Subnet mask mismatch on GigabitEthernet0/0 interface (configured 255.255.255.240 instead of 255.255.255.0)",
+        "why_ai_was_wrong": "AI blamed basic Layer 1/2 connectivity because ping failed, missing the /28 vs /24 subnet mask conflict on the router interface.",
+        "lesson_learned": "Always calculate interface network boundaries and subnet masks when ping fails to adjacent subnets."
+    }
+]

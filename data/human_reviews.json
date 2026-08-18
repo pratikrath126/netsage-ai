@@ -1,0 +1,167 @@
+{
+    "CASE-001": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-002": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-003": {
+        "status": "edited",
+        "reviewer_notes": "AI saw the VLAN was missing in 'show vlan' output but failed to check 'show interfaces trunk' where it was explicitly denied.. Always check trunking configurations when dealing with cross-switch VLAN propagation issues.",
+        "corrected_diagnosis": "VLAN not allowed on trunk link"
+    },
+    "CASE-004": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-005": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-006": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-007": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-008": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-009": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-010": {
+        "status": "edited",
+        "reviewer_notes": "AI noticed clients weren't getting IPs and guessed exhaustion without checking the 'show ip dhcp pool' network mask against the interface.. Verify DHCP pool network declarations strictly match the serving interface subnet.",
+        "corrected_diagnosis": "DHCP pool network statement mismatch"
+    },
+    "CASE-011": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-012": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-013": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-014": {
+        "status": "edited",
+        "reviewer_notes": "AI assumed network reachability was the issue because pings failed by hostname, but 'no ip domain-lookup' was active in the config.. Check local resolver status on the device before assuming external DNS failure.",
+        "corrected_diagnosis": "DNS service not enabled on router (no ip domain-lookup)"
+    },
+    "CASE-015": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-016": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-017": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-018": {
+        "status": "edited",
+        "reviewer_notes": "AI identified the correct ACL lines but failed to verify the direction of application on the interface.. The direction (in/out) of an ACL application is as critical as the ACL rules themselves.",
+        "corrected_diagnosis": "ACL applied inbound instead of outbound"
+    },
+    "CASE-019": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-020": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-021": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-022": {
+        "status": "edited",
+        "reviewer_notes": "AI analyzed the NAT translations and found none, assuming pool issues without verifying interface assignments.. Always verify 'ip nat inside' and 'ip nat outside' are applied to the correct interfaces.",
+        "corrected_diagnosis": "NAT inside/outside not configured on interfaces"
+    },
+    "CASE-023": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-024": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-025": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-026": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-027": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-028": {
+        "status": "edited",
+        "reviewer_notes": "AI noted authentication mismatch but did not specify pre-shared key (PSK) misconfiguration on the client side.",
+        "corrected_diagnosis": "WPA2-PSK passphrase mismatch between client and wireless access point."
+    },
+    "CASE-029": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-030": {
+        "status": "edited",
+        "reviewer_notes": "AI noticed interface flapping and assumed physical disconnection, missing the high CRC error count in 'show interfaces'.. Interface errors (CRC, giants, runts) are strong indicators of duplex/speed mismatches, not just cable disconnects.",
+        "corrected_diagnosis": "Speed/duplex mismatch causing CRC errors"
+    },
+    "CASE-031": {
+        "status": "accepted",
+        "reviewer_notes": "AI accurately diagnosed the root cause from show outputs. Verified evidence and fix steps match standard Cisco IOS procedures.",
+        "corrected_diagnosis": ""
+    },
+    "CASE-032": {
+        "status": "rejected",
+        "reviewer_notes": "AI concluded general Layer 1/2 issue, missing the explicit subnet mask mismatch on Gi0/0 (/28 vs /24).",
+        "corrected_diagnosis": "Subnet mask mismatch on GigabitEthernet0/0 interface (configured 255.255.255.240 instead of 255.255.255.0)."
+    },
+    "CASE-033": {
+        "status": "accepted",
+        "reviewer_notes": "Verified correct by auditor.",
+        "corrected_diagnosis": ""
+    }
+}

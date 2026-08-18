@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Responsible AI Log</h1>
+    <p class="text-muted">A log of instances where the AI provided incorrect diagnoses, and the corrections applied.</p>
+    <div class="mt-10">
+        <span class="badge badge-warning">Total Corrected Cases: {{ corrected_count }}</span>
+    </div>
+</div>
+
+<div class="log-grid mt-20">
+    {% for log in log_entries %}
+    <div class="card log-card">
+        <h3><a href="/diagnose/{{ log.case_id }}">{{ log.case_id }}</a></h3>
+        
+        <div class="log-section ai-said">
+            <h4>🔴 AI Said</h4>
+            <p>{{ log.ai_said }}</p>
+        </div>
+        
+        <div class="log-section correct-answer mt-10">
+            <h4>🟢 Correct Answer</h4>
+            <p>{{ log.correct_answer }}</p>
+        </div>
+        
+        <div class="mt-10">
+            <h4>Why AI Was Wrong:</h4>
+            <p>{{ log.why_ai_was_wrong }}</p>
+        </div>
+        
+        <div class="log-takeaway mt-10">
+            <h4>💡 Lesson Learned:</h4>
+            <p>{{ log.lesson_learned }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

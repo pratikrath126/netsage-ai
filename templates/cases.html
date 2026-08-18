@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Case Browser</h1>
+    <p class="text-muted">Browse and search through all network troubleshooting cases.</p>
+</div>
+
+<div class="filters">
+    <button class="filter-btn active" data-filter="all">All</button>
+    <button class="filter-btn" data-filter="VLAN">VLAN</button>
+    <button class="filter-btn" data-filter="Routing">Routing</button>
+    <button class="filter-btn" data-filter="DHCP">DHCP</button>
+    <button class="filter-btn" data-filter="DNS">DNS</button>
+    <button class="filter-btn" data-filter="ACL">ACL</button>
+    <button class="filter-btn" data-filter="NAT">NAT</button>
+    <button class="filter-btn" data-filter="Wireless">Wireless</button>
+    <button class="filter-btn" data-filter="Interface">Interface</button>
+</div>
+
+<div class="card">
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Case ID</th>
+                <th>Symptom</th>
+                <th>Concept</th>
+                <th>OSI Layer</th>
+                <th>Severity</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for case in cases %}
+            <tr class="case-row" data-concept="{{ case.concept_tag }}">
+                <td><strong>{{ case.case_id }}</strong></td>
+                <td>{{ case.symptom }}</td>
+                <td><span class="badge badge-concept">{{ case.concept_tag }}</span></td>
+                <td>{{ case.expected_osi_layer }}</td>
+                <td><span class="badge badge-{{ case.severity|lower }}">{{ case.severity }}</span></td>
+            </tr>
+            <tr class="case-detail-row" style="display: none;">
+                <td colspan="5">
+                    <div class="case-details">
+                        <h4>Topology Note</h4>
+                        <p>{{ case.topology_note }}</p>
+                        <h4>Show Outputs</h4>
+                        <pre><code>{{ case.show_outputs }}</code></pre>
+                        <h4>Expected Fault</h4>
+                        <p>{{ case.expected_fault }}</p>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

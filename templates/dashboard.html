@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>System Dashboard</h1>
+    <p class="text-muted">Overview of NetSage AI performance and case statistics</p>
+</div>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <h3>Total Cases</h3>
+        <div class="stat-value">{{ total_cases }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>Total Reviewed</h3>
+        <div class="stat-value">{{ total_reviewed }}</div>
+    </div>
+    <div class="stat-card">
+        <h3>AI Accuracy</h3>
+        <div class="stat-value">{{ ai_accuracy }}%</div>
+    </div>
+    <div class="stat-card">
+        <h3>Cases Corrected</h3>
+        <div class="stat-value warning-text">{{ cases_corrected }}</div>
+    </div>
+</div>
+
+<div class="charts-grid">
+    <div class="chart-card">
+        <h3>Cases by Concept</h3>
+        <canvas id="conceptChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Severity Distribution</h3>
+        <canvas id="severityChart"></canvas>
+    </div>
+    <div class="chart-card">
+        <h3>Review Status</h3>
+        <canvas id="statusChart"></canvas>
+    </div>
+</div>
+
+<script>
+    window.dashboardData = {{ dashboard_data | safe }};
+</script>
+{% endblock %}

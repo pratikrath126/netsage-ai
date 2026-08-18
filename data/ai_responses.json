@@ -1,0 +1,442 @@
+{
+    "CASE-001": {
+        "root_cause": "PC1 and PC2 are intended to be in VLAN 10 (Sales), but the interface Fa0/3 (presumably where one of the PCs is connected) is configured for VLAN 1 (default). This prevents communication between devices in different VLANs.",
+        "confidence": "high",
+        "evidence": "VLAN 10 Sales active \nAccess Mode VLAN: 1 (default)",
+        "next_command": "show running-config interface Fa0/3",
+        "fix_steps": [
+            "interface Fa0/3",
+            "switchport access vlan 10"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-002": {
+        "root_cause": "The interface Fa0/24 is configured in access mode, preventing it from passing VLAN traffic between switches. For switches to pass VLAN traffic between each other, the connecting ports must be configured as trunk ports.",
+        "confidence": "high",
+        "evidence": "Operational Mode: static access",
+        "next_command": "",
+        "fix_steps": [
+            "interface FastEthernet0/24",
+            "switchport mode trunk"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-003": {
+        "root_cause": "VLAN 20 is not allowed on the trunk interface Fa0/1, so traffic from PC in VLAN 20 cannot reach the router in a router-on-a-stick topology.",
+        "confidence": "high",
+        "evidence": "Port Fa0/1 Vlans allowed on trunk: 1-10",
+        "next_command": "show vlan brief",
+        "fix_steps": [
+            "interface FastEthernet0/1",
+            "switchport trunk allowed vlan add 20"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-004": {
+        "root_cause": "VLAN 30 is not present on the switch, which is required for the PC to be part of that VLAN and communicate.",
+        "confidence": "high",
+        "evidence": "VLAN Name Status Ports\n---- ------------------ --------- ------------------\n1 default active Fa0/1",
+        "next_command": "show running-config | include vlan",
+        "fix_steps": [
+            "vlan 30",
+            "name PC_VLAN"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-005": {
+        "root_cause": "The router does not have a route to the remote network 10.0.0.0/24. The 'show ip route' output only shows directly connected networks.",
+        "confidence": "high",
+        "evidence": "Gateway of last resort is not set\nC    192.168.1.0/24 is directly connected, FastEthernet0/0\nC    192.168.2.0/24 is directly connected, Serial0/0/0",
+        "next_command": "show running-config | section router",
+        "fix_steps": [
+            "ip route 10.0.0.0 255.255.255.0 192.168.2.2"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-006": {
+        "root_cause": "The router has a default route configured, but the ping to 8.8.8.8 is failing, indicating that the next hop for the default route (10.1.1.254) is unreachable or not routing traffic correctly.",
+        "confidence": "high",
+        "evidence": "S    0.0.0.0/0 [1/0] via 10.1.1.254\n.....\nSuccess rate is 0 percent (0/5)",
+        "next_command": "ping 10.1.1.254",
+        "fix_steps": [],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-007": {
+        "root_cause": "The encapsulation VLAN ID for FastEthernet0/0.20 is configured as 30, but it should be 20 to match the VLAN it's intended for.",
+        "confidence": "high",
+        "evidence": "interface FastEthernet0/0.20\n encapsulation dot1Q 30",
+        "next_command": "",
+        "fix_steps": [
+            "interface FastEthernet0/0.20",
+            "no encapsulation dot1Q 30",
+            "encapsulation dot1Q 20"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-008": {
+        "root_cause": "The static route to 192.168.3.0/24 is pointing to a next-hop IP address (10.1.1.5) that is unreachable from the router. The ping to 10.1.1.5 is failing, indicating a Layer 1 or Layer 2 issue on the link to the next-hop, or the next-hop itself is down/misconfigured.",
+        "confidence": "high",
+        "evidence": "S    192.168.3.0/24 [1/0] via 10.1.1.5\nSuccess rate is 0 percent (0/5)",
+        "next_command": "show cdp neighbors detail",
+        "fix_steps": [],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-009": {
+        "root_cause": "DHCP pool network (192.168.2.0/24) does not match the interface IP subnet (192.168.1.0/24), so the router cannot allocate valid addresses to clients on the LAN.",
+        "confidence": "high",
+        "evidence": "ip dhcp pool LAN_POOL\n network 192.168.2.0 255.255.255.0\n default-router 192.168.1.1",
+        "next_command": "",
+        "fix_steps": [
+            "ip dhcp pool LAN_POOL",
+            "no network 192.168.2.0 255.255.255.0",
+            "network 192.168.1.0 255.255.255.0"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-010": {
+        "root_cause": "The DHCP pool configuration is missing a default-router (gateway) option, which is essential for clients to reach networks beyond their local subnet, including the internet.",
+        "confidence": "high",
+        "evidence": "ip dhcp pool LAN_POOL\n network 192.168.1.0 255.255.255.0\n dns-server 8.8.8.8",
+        "next_command": "show ip interface brief",
+        "fix_steps": [
+            "ip dhcp pool LAN_POOL",
+            "default-router 192.168.1.1"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-011": {
+        "root_cause": "The IP address 192.168.1.1, which is assigned to the FastEthernet0/0 interface, is also being leased out by the DHCP server to a client, causing an IP conflict.",
+        "confidence": "high",
+        "evidence": "Interface FastEthernet0/0 IP-Address 192.168.1.1\nIP address 192.168.1.1 Client-ID/ 01aa.bbcc.ddee.ff Lease expiration Mar 01 1993 12:00 AM Type Automatic",
+        "next_command": "show run | section dhcp",
+        "fix_steps": [
+            "ip dhcp excluded-address 192.168.1.1"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-012": {
+        "root_cause": "The router interface for VLAN 10 is missing the 'ip helper-address' command, which is necessary to forward DHCP requests from the local subnet to a central DHCP server located on a different subnet.",
+        "confidence": "high",
+        "evidence": "interface FastEthernet0/0.10\n encapsulation dot1Q 10\n ip address 192.168.10.1 255.255.255.0",
+        "next_command": "show ip dhcp relay information",
+        "fix_steps": [
+            "interface FastEthernet0/0.10",
+            "ip helper-address <IP_ADDRESS_OF_DHCP_SERVER>"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-013": {
+        "root_cause": "The 'no ip domain-lookup' command is configured, which disables DNS resolution on the router. Although a name server is configured, the router will not attempt to resolve hostnames.",
+        "confidence": "high",
+        "evidence": "no ip domain-lookup",
+        "next_command": "",
+        "fix_steps": [
+            "ip domain-lookup"
+        ],
+        "osi_layer": "Layer 7"
+    },
+    "CASE-014": {
+        "root_cause": "The router is configured to use a DNS server (10.1.1.5) for name resolution, but the 'ip host' entry for SERVER-A is missing. The existing 'ip host' entry is for SERVER-B, not SERVER-A.",
+        "confidence": "high",
+        "evidence": "Translating \"SERVER-A\"...domain server (10.1.1.5)\n% Unrecognized host or address, or protocol not running.\nip host SERVER-B 192.168.1.100",
+        "next_command": "",
+        "fix_steps": [
+            "ip host SERVER-A <IP_ADDRESS_OF_SERVER-A>"
+        ],
+        "osi_layer": "Layer 7"
+    },
+    "CASE-015": {
+        "root_cause": "The DNS server configured in the DHCP pool (10.99.99.99) is unreachable, preventing the PC from resolving domain names.",
+        "confidence": "high",
+        "evidence": "Sending 5, 100-byte ICMP Echos to 10.99.99.99, timeout is 2 seconds:\n.....\nSuccess rate is 0 percent (0/5)",
+        "next_command": "show ip route 10.99.99.99",
+        "fix_steps": [
+            "ip dhcp pool LAN",
+            "no dns-server 10.99.99.99",
+            "dns-server <reachable_dns_server_ip>"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-016": {
+        "root_cause": "The router has a default route pointing to 10.0.0.1, but the DNS server 192.168.50.2 is not reachable via this route. The router only knows about the directly connected 10.0.0.0/24 network and the default route. There is no specific route for the 192.168.50.2 network.",
+        "confidence": "high",
+        "evidence": "ip name-server 192.168.50.2\nGateway of last resort is 10.0.0.1 to network 0.0.0.0\nC 10.0.0.0/24 is directly connected, FastEthernet0/0\nS 0.0.0.0/0 [1/0] via 10.0.0.1",
+        "next_command": "ping 192.168.50.2",
+        "fix_steps": [
+            "ip route 192.168.50.2 255.255.255.255 <next_hop_ip_address_to_reach_DNS_server>"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-017": {
+        "root_cause": "The access list 10 applied as an outgoing access list on FastEthernet0/1 only permits traffic from the 192.168.1.0/24 network. If PC2 is in a different subnet, its return traffic will be denied by this ACL when exiting Fa0/1.",
+        "confidence": "high",
+        "evidence": "Standard IP access list 10\n    10 permit 192.168.1.0, wildcard bits 0.0.0.255\nOutgoing access list is 10",
+        "next_command": "show ip route",
+        "fix_steps": [
+            "configure terminal",
+            "interface FastEthernet0/1",
+            "no ip access-group 10 out",
+            "ip access-group 100 out",
+            "access-list 100 permit ip any any"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-018": {
+        "root_cause": "The access-list 'OUTSIDE_IN' is applied in the 'out' direction on interface Serial0/0/0. This means it filters traffic *leaving* the router through this interface, not traffic *entering* it from the internet. Therefore, incoming web traffic is not being permitted by this ACL.",
+        "confidence": "high",
+        "evidence": "ip access-group OUTSIDE_IN out",
+        "next_command": "show ip interface Serial0/0/0",
+        "fix_steps": [
+            "interface Serial0/0/0",
+            "no ip access-group OUTSIDE_IN out",
+            "ip access-group OUTSIDE_IN in"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-019": {
+        "root_cause": "Access Control List 5 is applied inbound on the VTY lines, and it explicitly denies SSH access from the host 192.168.1.50, which is likely the source of the SSH attempt.",
+        "confidence": "high",
+        "evidence": "Standard IP access list 5\n    10 deny 192.168.1.50\n    20 permit 192.168.1.0, wildcard bits 0.0.0.255\naccess-class 10 in",
+        "next_command": "show users",
+        "fix_steps": [
+            "line vty 0 4",
+            "no access-class 10 in",
+            "access-class 5 in"
+        ],
+        "osi_layer": "Layer 7"
+    },
+    "CASE-020": {
+        "root_cause": "The access list 100 applied inbound on FastEthernet0/0 has a 'deny ip any any' statement as the first rule, which is blocking all traffic before the 'permit ip 192.168.1.0 0.0.0.255 any' rule can be evaluated. This effectively blocks all traffic, including internet traffic, for users on the 192.168.1.0/24 network.",
+        "confidence": "high",
+        "evidence": "Extended IP access list 100\n    10 deny ip any any\n    20 permit ip 192.168.1.0 0.0.0.255 any",
+        "next_command": "",
+        "fix_steps": [
+            "ip access-list extended 100",
+            "no 10 deny ip any any",
+            "15 permit ip 192.168.1.0 0.0.0.255 any",
+            "20 deny ip any any"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-021": {
+        "root_cause": "The NAT configuration is incomplete. While the outside interface is defined, there is no configuration for the inside interface or the actual NAT translation rules (either static or dynamic). The 'show ip nat translations' command output is empty, indicating no NAT activity.",
+        "confidence": "high",
+        "evidence": "--- show ip nat translations ---\n\ninterface FastEthernet0/0\n ip address 192.168.1.1 255.255.255.0\ninterface Serial0/0/0\n ip address 203.0.113.1 255.255.255.252\n ip nat outside",
+        "next_command": "show ip nat statistics",
+        "fix_steps": [
+            "interface FastEthernet0/0",
+            "ip nat inside",
+            "ip access-list standard NAT_ACL",
+            "permit 192.168.1.0 0.0.0.255",
+            "ip nat inside source list NAT_ACL interface Serial0/0/0 overload"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-022": {
+        "root_cause": "The NAT access list is configured to permit only the 192.168.1.0/24 network, but the wildcard bits 0.0.0.255 are incorrect for a /24 network. This means only a single host (192.168.1.0) is being matched for NAT, or the access list is misinterpreting the network.",
+        "confidence": "high",
+        "evidence": "Standard IP access list 1\n    10 permit 192.168.1.0, wildcard bits 0.0.0.255",
+        "next_command": "show ip nat translations",
+        "fix_steps": [
+            "no access-list 1",
+            "access-list 1 permit 192.168.1.0 0.0.0.255"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-023": {
+        "root_cause": "The port forwarding configuration is translating external port 80 to internal port 8080, but the symptom states that port forwarding to the internal web server fails, implying the web server is expected on port 80, not 8080. The NAT translation shows the internal web server is listening on port 8080, which might not be the intended port for a standard web server.",
+        "confidence": "high",
+        "evidence": "tcp 203.0.113.2:80     192.168.1.10:8080  ---                ---\nip nat inside source static tcp 192.168.1.10 8080 203.0.113.2 80",
+        "next_command": "show ip nat statistics",
+        "fix_steps": [
+            "no ip nat inside source static tcp 192.168.1.10 8080 203.0.113.2 80",
+            "ip nat inside source static tcp 192.168.1.10 80 203.0.113.2 80"
+        ],
+        "osi_layer": "Layer 4"
+    },
+    "CASE-024": {
+        "root_cause": "The NAT access list (access-list 1) only permits traffic from the 192.168.10.0/24 network. Traffic from VLAN 20, which would be on a different subnet, is not included in this access list and therefore not being translated by NAT.",
+        "confidence": "high",
+        "evidence": "10 permit 192.168.10.0, wildcard bits 0.0.0.255",
+        "next_command": "show ip interface brief",
+        "fix_steps": [
+            "access-list 1 permit 192.168.20.0 0.0.0.255"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-025": {
+        "root_cause": "The wireless LAN (WLAN) 'CorpWLAN' is currently disabled, preventing laptops from connecting to it.",
+        "confidence": "high",
+        "evidence": "1        CorpWLAN / CorpWLAN                    Disabled  management",
+        "next_command": "",
+        "fix_steps": [
+            "config wlan enable 1"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-026": {
+        "root_cause": "Both APs are operating on the same channel (Channel 6) with the same transmit power (TxPower 1). This can lead to co-channel interference, causing frequent disconnections for wireless clients.",
+        "confidence": "high",
+        "evidence": "AP-1                0011.2233.4455    0     ENABLED      UP          6        1\nAP-2                0011.2233.4466    0     ENABLED      UP          6        1",
+        "next_command": "show ap summary",
+        "fix_steps": [
+            "config ap name AP-1 802.11b channel auto",
+            "config ap name AP-2 802.11b channel auto",
+            "config ap name AP-1 802.11b txpower auto",
+            "config ap name AP-2 802.11b txpower auto"
+        ],
+        "osi_layer": "Layer 1"
+    },
+    "CASE-027": {
+        "root_cause": "The BVI1 interface, which is likely the management interface for the wireless network, has an IP address configured, but there is no indication that a DHCP server is configured or reachable from this device. The symptom states an 'external DHCP', but without further configuration, the wireless device itself won't forward DHCP requests to the external server.",
+        "confidence": "medium",
+        "evidence": "interface BVI1\n ip address 192.168.1.2 255.255.255.0",
+        "next_command": "show run | section dhcp",
+        "fix_steps": [],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-028": {
+        "root_cause": "The WLAN 'Guest_Net' is configured with WPA2 security enabled, but the 802.11 authentication method is set to 'Open'. This is a misconfiguration as Open authentication should not be used with WPA2, leading to client association failures.",
+        "confidence": "high",
+        "evidence": "802.11 Authentication:........................ Open\n   WPA2 Policy:.................................. Enabled",
+        "next_command": "",
+        "fix_steps": [
+            "config wlan 1",
+            "security wpa2 wpa2-psk ascii <your_psk_key>",
+            "security wpa2 enable"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-029": {
+        "root_cause": "The FastEthernet0/1 interface, to which the PC is directly connected, is administratively down.",
+        "confidence": "high",
+        "evidence": "FastEthernet0/1            unassigned      YES unset  down                  down",
+        "next_command": "",
+        "fix_steps": [
+            "interface FastEthernet0/1",
+            "no shutdown"
+        ],
+        "osi_layer": "Layer 1"
+    },
+    "CASE-030": {
+        "root_cause": "The serial interface Serial0/0/0 is administratively down, meaning it has been manually shut down.",
+        "confidence": "high",
+        "evidence": "Serial0/0/0 is administratively down, line protocol is down",
+        "next_command": "",
+        "fix_steps": [
+            "interface Serial0/0/0",
+            "no shutdown"
+        ],
+        "osi_layer": "Layer 1"
+    },
+    "CASE-031": {
+        "root_cause": "The interface is configured for half-duplex, and there are a high number of collisions, indicating a duplex mismatch with the connected device (PC).",
+        "confidence": "high",
+        "evidence": "Half-duplex, 100Mb/s, media type is 10/100BaseTX\n  0 output errors, 1000 collisions, 1 interface resets",
+        "next_command": "",
+        "fix_steps": [
+            "interface FastEthernet0/1",
+            "duplex full",
+            "speed 100"
+        ],
+        "osi_layer": "Layer 1"
+    },
+    "CASE-032": {
+        "root_cause": "The router's GigabitEthernet0/0 interface is administratively up, but it cannot ping the expected next hop (192.168.1.2). This indicates a Layer 1 or Layer 2 issue preventing basic connectivity.",
+        "confidence": "high",
+        "evidence": "Success rate is 0 percent (0/5)",
+        "next_command": "show interfaces GigabitEthernet0/0",
+        "fix_steps": [],
+        "osi_layer": "Layer 1"
+    },
+    "CASE-033": {
+        "root_cause": "Native VLAN mismatch on trunk port GigabitEthernet0/1 between Switch1 and Switch2. Switch1 has native VLAN 1, while Switch2 has native VLAN 99, causing CDP errors and potential traffic leakage.",
+        "confidence": "high",
+        "evidence": "%CDP-4-NATIVE_VLAN_MISMATCH: Native VLAN mismatch discovered on GigabitEthernet0/1 (1), with Switch2 GigabitEthernet0/1 (99).",
+        "next_command": "show interfaces trunk",
+        "fix_steps": [
+            "interface GigabitEthernet0/1",
+            "switchport trunk native vlan 1"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-034": {
+        "root_cause": "Spanning Tree Protocol (STP) is globally disabled on the switch, causing redundant links to form a Layer 2 loop and saturate bandwidth.",
+        "confidence": "high",
+        "evidence": "no spanning-tree vlan 1-4094",
+        "next_command": "show spanning-tree vlan 1",
+        "fix_steps": [
+            "spanning-tree vlan 1-4094",
+            "no shutdown"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-035": {
+        "root_cause": "OSPF area mismatch between the two routers. R1's GigabitEthernet0/1 is configured in area 0, while R2's GigabitEthernet0/1 is configured in area 1. This prevents OSPF neighbor adjacency from forming, causing the neighbor state to remain stuck in INIT/EXSTART.",
+        "confidence": "high",
+        "evidence": "R2's interface configuration shows 'ip ospf 1 area 1', while R1's 'show ip ospf interface Gi0/1' indicates 'Internet Address 10.0.0.1/30, Area 0'.",
+        "next_command": "",
+        "fix_steps": [
+            "interface GigabitEthernet0/1",
+            "ip ospf 1 area 0"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-036": {
+        "root_cause": "The OSPF interface GigabitEthernet0/0 is configured as passive, which prevents the router from sending or receiving OSPF hello packets. Without hello packets, the branch router cannot form an OSPF adjacency with the HQ router, so it stops learning OSPF routes.",
+        "confidence": "high",
+        "evidence": "No hellos (Passive interface) and passive-interface GigabitEthernet0/0 in the OSPF configuration.",
+        "next_command": "show ip ospf neighbor",
+        "fix_steps": [
+            "router ospf 1",
+            "no passive-interface GigabitEthernet0/0"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-037": {
+        "root_cause": "The uplink interface Gi0/1 connected to the DHCP server is configured as untrusted for DHCP snooping. DHCP snooping drops DHCP server reply messages (OFFER/ACK) received on untrusted ports, so clients never receive DHCP leases.",
+        "confidence": "high",
+        "evidence": "Interface Gi0/1 (Uplink to DHCP Server)\n  DHCP Snooping Trust: Untrusted",
+        "next_command": "show ip dhcp snooping statistics",
+        "fix_steps": [
+            "interface Gi0/1",
+            "ip dhcp snooping trust"
+        ],
+        "osi_layer": "Layer 2"
+    },
+    "CASE-038": {
+        "root_cause": "The ACL applied inbound on interface Gi0/0 is named ACL_WEB_FILTER, but the ACL actually configured is named ACL_WEB_ONLY. Because the interface references a non-existent ACL, the intended web traffic permit statements are not applied, and traffic is implicitly denied, blocking the Marketing PC from reaching the web server.",
+        "confidence": "high",
+        "evidence": "show access-lists shows 'Extended IP access list ACL_WEB_ONLY', but show run interface Gi0/0 shows 'ip access-group ACL_WEB_FILTER in'.",
+        "next_command": "",
+        "fix_steps": [
+            "configure terminal",
+            "interface GigabitEthernet0/0",
+            "no ip access-group ACL_WEB_FILTER in",
+            "ip access-group ACL_WEB_ONLY in"
+        ],
+        "osi_layer": "Layer 4"
+    },
+    "CASE-039": {
+        "root_cause": "The NAT pool has only 10 public IP addresses, and all 10 are currently allocated to active translations. When additional users attempt to access the internet, there are no remaining addresses in the pool, causing NAT allocation failures (misses) and loss of internet access.",
+        "confidence": "high",
+        "evidence": "pool PUBLIC_POOL: netmask 255.255.255.240\n  start 203.0.113.1 end 203.0.113.10\n  type generic, total addresses 10, allocated 10 (100%), misses 184",
+        "next_command": "",
+        "fix_steps": [
+            "ip nat inside source list 1 pool PUBLIC_POOL overload",
+            "Or increase the pool size by adding more addresses to the pool (e.g., ip nat pool PUBLIC_POOL 203.0.113.1 203.0.113.20 netmask 255.255.255.240)"
+        ],
+        "osi_layer": "Layer 3"
+    },
+    "CASE-040": {
+        "root_cause": "The GRE tunnel interface has 'ip mtu 1500' configured, but GRE encapsulation adds 24 bytes of overhead. The tunnel interface MTU is 1476 bytes, so a 1500-byte IP packet with the DF bit set cannot be encapsulated and forwarded without exceeding the underlying WAN MTU, causing drops.",
+        "confidence": "high",
+        "evidence": "Tunnel0 MTU 1476 bytes ... ping 10.10.10.2 size 1500 df-bit ... Success rate is 0 percent (0/5) ... interface Tunnel0 ... ip mtu 1500",
+        "next_command": "",
+        "fix_steps": [
+            "interface Tunnel0",
+            "no ip mtu 1500"
+        ],
+        "osi_layer": "Layer 3"
+    }
+}
